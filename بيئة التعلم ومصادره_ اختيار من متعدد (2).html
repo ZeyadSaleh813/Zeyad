@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>بيئة التعلم ومصادره: اختيار من متعدد</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f2f5f9; --surface:#ffffff; --ink:#14213d; --muted:#5a6679; --line:#d5dde8;
+  --accent:#0f7c7e; --accent-ink:#ffffff; --accent-soft:#dff1f1; --warm:#e9b44c;
+  --ok:#1f7a4d; --ok-soft:#dff3e8; --bad:#a63a2e; --bad-soft:#fbe4e0;
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1624; --surface:#18233a; --ink:#e8edf6; --muted:#9aa8bf; --line:#2c3a56;
+    --accent:#3cc3c5; --accent-ink:#06282a; --accent-soft:#16363f; --warm:#e9b44c;
+    --ok:#6fd6a1; --ok-soft:#173a2b; --bad:#f19a8e; --bad-soft:#431f1b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1624; --surface:#18233a; --ink:#e8edf6; --muted:#9aa8bf; --line:#2c3a56;
+  --accent:#3cc3c5; --accent-ink:#06282a; --accent-soft:#16363f; --warm:#e9b44c;
+  --ok:#6fd6a1; --ok-soft:#173a2b; --bad:#f19a8e; --bad-soft:#431f1b;
+  color-scheme: dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans Arabic",Tahoma,"Segoe UI",sans-serif;line-height:1.85;font-size:17px}
+main{max-width:760px;margin:0 auto;padding:28px 18px 60px}
+h1{font-size:1.7rem;line-height:1.4;margin:0 0 6px;font-weight:700}
+.lead{color:var(--muted);margin:0 0 26px}
+.group{margin-bottom:22px}
+.group-title{font-weight:700;margin-bottom:8px}
+.levels{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);
+  padding:8px 16px;border-radius:999px;font:inherit;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:500}
+.topics{list-style:none;margin:0;padding:0;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.topics li+li{border-top:1px solid var(--line)}
+.topic{width:100%;display:flex;align-items:center;gap:12px;text-align:right;
+  background:none;border:0;color:var(--ink);font:inherit;padding:12px 14px;cursor:pointer}
+.topic:hover{background:var(--accent-soft)}
+.num{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:var(--accent-soft);color:var(--accent);font-weight:700;font-size:.95rem}
+.topic[aria-current="true"] .num{background:var(--accent);color:var(--accent-ink)}
+.topic .t{flex:1}
+.done{font-size:.85rem;color:var(--ok);background:var(--ok-soft);padding:2px 10px;border-radius:999px}
+.stage{background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:20px 18px;margin-top:8px}
+.stage h2{font-size:1.25rem;margin:0 0 10px}
+.scenario{border-right:4px solid var(--warm);padding:4px 14px;margin:0 0 16px;background:var(--bg);border-radius:6px}
+.progress{height:6px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:6px}
+.progress>i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.count{color:var(--muted);font-size:.9rem;margin-bottom:12px}
+.q{font-weight:700;margin:0 0 12px;font-size:1.08rem}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{display:flex;align-items:flex-start;gap:12px;text-align:right;width:100%;
+  font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);
+  border-radius:12px;padding:10px 12px;cursor:pointer}
+.opt:hover:not([disabled]){border-color:var(--accent)}
+.opt[disabled]{cursor:default}
+.circle{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--muted);
+  display:grid;place-items:center;font-size:.9rem;font-weight:500;color:var(--muted);margin-top:1px}
+.opt .txt{flex:1}
+.opt.correct{border-color:var(--ok);background:var(--ok-soft)}
+.opt.correct .circle{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .circle{background:var(--bad);border-color:var(--bad);color:var(--surface)}
+.fb{margin-top:14px;padding:10px 14px;border-radius:10px;background:var(--accent-soft)}
+.fb b{display:block;margin-bottom:2px}
+.fb.ok b{color:var(--ok)} .fb.bad b{color:var(--bad)}
+.btn{font:inherit;border:0;border-radius:10px;padding:9px 18px;cursor:pointer;background:var(--accent);color:var(--accent-ink);font-weight:500;margin-top:14px}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+textarea:focus-visible,.chip:focus-visible,.topic:focus-visible,.btn:focus-visible,.opt:focus-visible{outline:3px solid var(--warm);outline-offset:2px}
+.summary{text-align:center;padding:6px 0}
+.summary .score{font-size:2.2rem;font-weight:700;color:var(--accent)}
+.review{text-align:right;margin:14px 0;padding:0;list-style:none}
+.review li{padding:10px 12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--bg)}
+.review small{display:block;color:var(--ok)}
+.empty{color:var(--muted);padding:18px;text-align:center}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.theme{background:none;border:1.5px solid var(--line);color:var(--ink);border-radius:10px;padding:4px 10px;font:inherit;cursor:pointer}
+@media (prefers-reduced-motion: reduce){.progress>i{transition:none}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <h1>بيئة التعلم ومصادره: اختيار من متعدد</h1>
+      <p class="lead">اختر مستوى وموضوعًا، ثم ضع دائرة حول رمز الإجابة الصحيحة. تظهر النتيجة والتفسير فور اختيارك.</p>
+    </div>
+    <button class="theme" id="themeBtn" type="button" aria-label="تبديل المظهر">◐</button>
+  </div>
+
+  <div class="group">
+    <div class="group-title">المستوى</div>
+    <div class="levels" id="levels"></div>
+  </div>
+
+  <div class="group">
+    <div class="group-title">الموضوع (الترتيب المقترح 1 ← 7)</div>
+    <ul class="topics" id="topics"></ul>
+  </div>
+
+  <section id="stage" aria-live="polite"></section>
+</main>
+
+<script>
+/* ===== بيانات المحتوى =====
+   كل سؤال: [نص السؤال, [البدائل], رقم الإجابة الصحيحة (يبدأ من 0), التفسير] */
+const LEVELS = [
+  {id:"a", name:"التذكّر والفهم"},
+  {id:"b", name:"التطبيق والتحليل"}
+];
+
+const TOPICS = [
+ {title:"مفهوم بيئة التعلم وأنواعها", items:{
+  a:{scenario:"تدخل معلمة صفًا فيه 30 طالبًا وتريد أن تفهم ما المقصود ببيئة التعلم قبل تخطيط درسها.",
+   qs:[
+    ["ما المقصود ببيئة التعلم؟",["الكتاب المدرسي والمنهاج فقط","المحيط الكلي المادي والنفسي-الاجتماعي والتقني الذي يجري فيه التعلم","مبنى المدرسة وساحاتها","الأنشطة التي يخطط لها المعلم"],1,"بيئة التعلم هي المحيط الكلي الذي يجري فيه التعلم ويؤثر في الطلبة، ولا تقتصر على المبنى أو المنهاج."],
+    ["أي مما يلي يُعد من أنواع بيئة التعلم؟",["البيئة المادية والبيئة النفسية-الاجتماعية","بيئة الامتحانات وبيئة الواجبات","البيئة الورقية والبيئة الشفوية فقط","بيئة المعلم وبيئة المدير"],0,"التصنيف المعتمد: مادية ونفسية-اجتماعية، ويضاف إليهما الرقمية عند التعلم عبر المنصات."],
+    ["أي الأمثلة التالية يمثل بيئة نفسية-اجتماعية؟",["ترتيب المقاعد","إضاءة الصف","مناخ الاحترام وتشجيع المشاركة","حجم السبورة"],2,"المناخ والعلاقات والدعم من عناصر البيئة النفسية-الاجتماعية، أما البقية فمادية."]
+   ]},
+  b:{scenario:"ينقل معلم درسه إلى منصة إلكترونية لمدة أسبوعين بسبب ظرف طارئ.",
+   qs:[
+    ["ما نوع بيئة التعلم الجديدة؟",["بيئة مادية تقليدية","بيئة رقمية افتراضية","بيئة مجتمعية","بيئة مخبرية"],1,"التعلم عبر المنصة يجري في بيئة رقمية (افتراضية) تعتمد على الاتصال والمنصة."],
+    ["أي عنصر يبقى مؤثرًا في التعلم حتى في هذه البيئة؟",["لا شيء، لأن التعلم أصبح إلكترونيًا","مكان دراسة الطالب وهدوؤه ومناخ التفاعل مع المعلم","السبورة فقط","ترتيب مقاعد الصف الأصلي"],1,"ظروف مكان الدراسة (مادية) ومناخ التفاعل (نفسي-اجتماعي) يؤثران في الانتباه والدافعية."],
+    ["أنسب إجراء للحفاظ على مناخ داعم عن بُعد هو:",["الاكتفاء بالمحاضرة المسجلة","منع الأسئلة لتوفير الوقت","قواعد مشاركة واضحة وقنوات للأسئلة وتغذية راجعة سريعة","إلغاء الأنشطة الجماعية"],2,"الوضوح والتواصل والتغذية الراجعة تبني الأمان والتفاعل حتى عن بُعد."]
+   ]}
+ }},
+ {title:"البيئة المادية", items:{
+  a:{scenario:"صف مقاعده في صفوف متتالية، وتريد المعلمة تنفيذ نشاط تعلم تعاوني.",
+   qs:[
+    ["ما المشكلة في هذا الترتيب بالنسبة للنشاط؟",["يزيد التواصل بين الطلبة","يحدّ من التواصل ويجعل الاتجاه غالبًا من المعلم إلى الطلبة","يوفر مساحة كبيرة","يمنع الضوضاء تمامًا"],1,"الصفوف المتتالية تقلل التفاعل بين الطلبة، وهذا لا يناسب التعلم التعاوني."],
+    ["أي الترتيبات أنسب للنشاط التعاوني؟",["صف واحد طويل","مجموعات صغيرة متقابلة","كل طالب في زاوية","ترتيب بحسب الطول فقط"],1,"المجموعات الصغيرة المتقابلة (4–5 طلاب) تسهّل الحوار وتوزيع الأدوار."],
+    ["أي مما يلي عنصر من عناصر البيئة المادية؟",["علاقة الطالب بزملائه","الإضاءة والتهوية","تقدير المعلم للجهد","قواعد الاحترام"],1,"الإضاءة والتهوية جوانب ملموسة، أما البقية فنفسية-اجتماعية."]
+   ]},
+  b:{scenario:"في صف من 40 طالبًا يضعف تركيز طلبة الصفوف الخلفية بسبب الضوضاء وسوء الرؤية.",
+   qs:[
+    ["السبب الأرجح لضعف تركيز الخلفيين هو:",["صعوبة المنهاج حتمًا","بعد المسافة وسوء الرؤية والضوضاء","غياب الواجبات","كثرة التقويم"],1,"المعطيات في الموقف تشير إلى عوامل مادية: المسافة والرؤية والضوضاء."],
+    ["أنسب تعديل مقترح:",["إبقاء الترتيب كما هو","تبديل أماكن الطلبة دوريًا وتكبير الوسائل البصرية","نقل الطلبة الخلفيين إلى صف آخر","إلغاء استخدام السبورة"],1,"التبديل الدوري وتكبير المواد يعالجان الرؤية ويحققان العدالة بين الطلبة."],
+    ["كيف يتحقق المعلم من أثر التعديل؟",["الاعتماد على الانطباع العام فقط","ملاحظة المشاركة والانتباه ومقارنة الأداء قبل التعديل وبعده","سؤال المدير فقط","انتظار نهاية الفصل"],1,"التقويم يعتمد على أدلة: ملاحظة ومقارنة قبل التعديل وبعده."]
+   ]}
+ }},
+ {title:"البيئة النفسية الاجتماعية", items:{
+  a:{scenario:"طالب يتوقف عن المشاركة بعد أن سخر زملاؤه من إجابة خاطئة.",
+   qs:[
+    ["أي عنصر في البيئة تأثر هنا؟",["الإضاءة","المناخ النفسي-الاجتماعي (الأمان والاحترام)","عدد المقاعد","الكتاب المدرسي"],1,"السخرية تهدم الشعور بالأمان والاحترام، وهما أساس المناخ النفسي-الاجتماعي."],
+    ["ما الإجراء الفوري المناسب للمعلم؟",["تجاهل الموقف","معاقبة الطالب بسبب إجابته","إيقاف السخرية بهدوء وتقدير محاولة الطالب","منع الأسئلة"],2,"إيقاف السخرية وتقدير المحاولة يعيدان الأمان ويحوّلان الخطأ إلى فرصة للتعلم."],
+    ["أي صيغة تصلح قاعدة صفية وقائية؟",["من يخطئ يخرج من الدرس","نحترم محاولة كل زميل ولا نسخر من الأخطاء","الإجابة للمتفوقين فقط","الصمت طوال الحصة"],1,"القاعدة الإيجابية الواضحة المصاغة مع الطلبة تحمي المناخ الصفي."]
+   ]},
+  b:{scenario:"صف متفاوت المستويات يخشى طلبته الخطأ، فتنخفض المشاركة إلى القلة نفسها كل حصة.",
+   qs:[
+    ["أي مما يلي مؤشر على مناخ صفي سلبي؟",["مشاركة معظم الطلبة","احتكار قلة للمشاركة وصمت الأغلبية","طرح الطلبة أسئلة متنوعة","تعاون المجموعات"],1,"احتكار المشاركة وصمت الأغلبية يدلان على خوف من الخطأ."],
+    ["أي ممارسة تحسّن المناخ؟",["مقارنة الطلبة ببعضهم علنًا","التفكير ثم المشاركة الثنائية قبل الإجابة العلنية","توجيه الأسئلة للمتفوقين فقط","عدم تصحيح الأخطاء"],1,"المشاركة الثنائية تخفف الخوف وتتيح لكل طالب التعبير قبل الإجابة العلنية."],
+    ["أنسب طريقة لقياس أثر الممارسات:",["عدد المشاركين في كل حصة واستبانة قصيرة عن الشعور بالأمان","عدد الواجبات المسلمة","طول الحصة","لون جدران الصف"],0,"المؤشرات الملائمة هي ما يرتبط مباشرة بالمشاركة والشعور بالأمان."]
+   ]}
+ }},
+ {title:"مفهوم مصادر التعلم وتصنيفها", items:{
+  a:{scenario:"تريد معلمة تصنيف المواد التالية: كتاب مدرسي، مقطع فيديو، مزارع زائر، تطبيق تفاعلي.",
+   qs:[
+    ["ما المقصود بمصدر التعلم؟",["الأجهزة الحديثة فقط","كل ما يزوّد المتعلم بالمعلومات والخبرات من أشخاص ومواد وأدوات ومواقع","الكتاب المدرسي فقط","ما يشتريه المعلم"],1,"مصدر التعلم مفهوم واسع يشمل البشر والمواد والأدوات والأماكن."],
+    ["يُصنَّف المزارع الزائر ضمن المصادر:",["المطبوعة","السمعبصرية","البشرية/المجتمعية","الرقمية"],2,"الشخص صاحب الخبرة مصدر بشري يأتي من المجتمع."],
+    ["ما الفرق بين المصدر والوسيلة؟",["لا فرق إطلاقًا","المصدر يُستقى منه المحتوى والخبرة، والوسيلة تنقل المحتوى وتوضحه","الوسيلة دائمًا بشرية","المصدر دائمًا مطبوع"],1,"هذا من أكثر مواضع الخلط شيوعًا؛ وقد يكون الشيء الواحد مصدرًا ووسيلة بحسب استخدامه."]
+   ]},
+  b:{scenario:"مدرسة قليلة الإمكانات في قرية زراعية، وتريد معلمة العلوم تنويع مصادر التعلم لدرس النبات.",
+   qs:[
+    ["ما المصادر المتاحة فعلًا في بيئة الطلبة؟",["مختبرات رقمية متقدمة","المزارع والمزارعون والمرشد الزراعي والبذور والتربة","قاعات سينما","متاحف عالمية"],1,"المصادر المحلية المتاحة تقلل الكلفة وترتبط بحياة الطلبة."],
+    ["يُصنَّف المرشد الزراعي ضمن المصادر:",["المطبوعة","البشرية","الرقمية","المادية فقط"],1,"المرشد شخص خبير، فهو مصدر بشري."],
+    ["أنسب توظيف للمصادر في الدرس:",["حفظ أسماء النباتات من الكتاب فقط","عرض صورة واحدة دون نقاش","تكليف الطلبة بزراعة بذور ومتابعتها وتسجيل ملاحظاتهم ثم مناقشتها","إلغاء الدرس"],2,"التوظيف الفعّال يضع الطالب في نشاط حقيقي ينتهي بمناقشة ونتاج."]
+   ]}
+ }},
+ {title:"معايير اختيار مصدر التعلم", items:{
+  a:{scenario:"يتردد معلم بين عرض فيلم وثائقي واستخدام فصل من الكتاب لتعليم موضوع واحد.",
+   qs:[
+    ["أول معيار عند اختيار مصدر التعلم:",["الملاءمة للأهداف وللطلبة","السعر","الشكل الجذاب","سهولة التخزين"],0,"الهدف التعليمي والطلبة هما المرجع الأول لأي اختيار."],
+    ["أي مما يلي معيار مناسب أيضًا؟",["لون الغلاف","عدد الصفحات","دقة المحتوى وحداثته","اسم الناشر فقط"],2,"الدقة والحداثة من معايير الجودة الأساسية."],
+    ["لماذا لا يكفي الاعتماد على السعر وحده؟",["لأن الرخيص دائمًا أفضل","لأن المصدر الرخيص قد لا يحقق الأهداف أو يناسب الطلبة","لأن السعر لا يهم أبدًا","لأن الغالي دائمًا أفضل"],1,"التكلفة معيار واحد من عدة معايير، ولا تغني عن الملاءمة."]
+   ]},
+  b:{scenario:"أمامك مصدران لدرس عن الطاقة المتجددة: تطبيق محاكاة مدفوع ومقاطع مجانية على الإنترنت متفاوتة الجودة.",
+   qs:[
+    ["أي مقارنة بين المصدرين صحيحة؟",["المجاني دائمًا أدق","المحاكاة تتيح تجريبًا تفاعليًا، والمقاطع المجانية تحتاج فحص موثوقيتها","المدفوع مرفوض دائمًا","لا فرق بين المصدرين"],1,"لكل مصدر ميزة وتحدٍّ، والمقارنة تكون بالتكلفة والملاءمة والموثوقية."],
+    ["أي عامل يرجّح أحد المصدرين؟",["توفر الأجهزة والإنترنت والوقت وطبيعة الهدف","لون واجهة التطبيق","رغبة الناشر","عدد الإعلانات"],0,"الظروف العملية وطبيعة الهدف تحدد الأنسب."],
+    ["أي قرار يُعد مبررًا؟",["اختيار الأغلى دائمًا","اختيار أي مصدر عشوائيًا","عدم استخدام أي مصدر","اختيار المحاكاة إن توفرت الأجهزة لأنها تحقق هدف التجريب، مع مقطع منتقى للتمهيد"],3,"القرار الجيد يربط الاختيار بالأهداف والظروف ويعلّله."]
+   ]}
+ }},
+ {title:"توظيف المصادر المحلية والرقمية", items:{
+  a:{scenario:"معلم يريد استخدام مصادر من بيئة الطلبة المحلية في درس الدراسات الاجتماعية.",
+   qs:[
+    ["أي مما يلي مثال على مصدر محلي؟",["الموقع الأثري القريب وكبار السن في الحي","موقع عالمي بعيد","مختبر دولي","متحف في بلد آخر"],0,"المصدر المحلي هو ما يتوفر في بيئة الطلبة القريبة."],
+    ["ما فائدة توظيف المصادر المحلية؟",["تبعد التعلم عن حياة الطالب","تربط التعلم بحياة الطالب وتوفر خبرات واقعية بكلفة قليلة","تزيد التكلفة دائمًا","تقلل الدافعية"],1,"الارتباط بالواقع يرفع الدافعية، والتوفر المحلي يخفض الكلفة."],
+    ["أهم خطوة قبل الزيارة أو الاستضافة:",["الذهاب دون تخطيط","التخطيط: الهدف والتنسيق وأسئلة الطلبة وقواعد السلامة","إخبار الطلبة قبل دقيقة","إلغاء قواعد السلوك"],1,"التخطيط المسبق يضمن أن تحقق الزيارة هدفًا تعليميًا محددًا."]
+   ]},
+  b:{scenario:"صف مزدحم وإمكانات محدودة، والمعلم يريد دمج مصدر رقمي ومصدر مجتمعي في وحدة واحدة.",
+   qs:[
+    ["كيف يتعامل المعلم مع الازدحام عند التوظيف؟",["تقسيم الطلبة إلى مجموعات صغيرة وتوزيع الأدوار","إبقاء الجميع في صف واحد","تأجيل النشاط دائمًا","منع المجموعات"],0,"المجموعات الصغيرة تخفف الازدحام وتزيد مشاركة كل طالب."],
+    ["أي تسلسل للنشاط مناسب؟",["مقابلة ثم لا شيء","تمهيد رقمي قصير ثم استضافة مجتمعية ثم مهمة للمجموعات ثم عرض النتائج","عرض النتائج قبل أي نشاط","استضافة دون هدف"],1,"التسلسل يبدأ بتمهيد وينتهي بنتاج يُعرض ويُناقَش."],
+    ["أي مما يلي من المخاطر التي تحتاج معالجة؟",["كثرة الخبرات الواقعية","وضوح الأهداف","ضعف الإنترنت وتشتت الطلبة وعدم دقة بعض المعلومات الرقمية","توفر خطة بديلة"],2,"هذه مخاطر عملية تُعالج بخطة بديلة وتعليمات واضحة وفحص المصادر."]
+   ]}
+ }},
+ {title:"تقويم بيئة التعلم ومصادرها", items:{
+  a:{scenario:"تريد معلمة أن تعرف مدى جودة مصدر تعلم استخدمته في ثلاث حصص.",
+   qs:[
+    ["لماذا نقوّم مصدر التعلم بعد استخدامه؟",["لمعرفة أثره في تحقيق الأهداف وقرار الاستمرار أو التعديل أو الاستبدال","لإرضاء المدير فقط","لأنه إجراء شكلي","لتغيير الكتاب كل حصة"],0,"التقويم يوفر أدلة لقرار مبني على الأثر."],
+    ["أي مما يلي معيار مناسب لتقويم المصدر؟",["لون الغلاف فقط","اسم صاحب المصدر","ارتباطه بالأهداف ووضوحه وتفاعل الطلبة معه","مكان تصنيعه"],2,"المعايير تدور حول الأهداف والجودة والاستخدام."],
+    ["أي أداة مناسبة لجمع المعلومات عن المصدر؟",["التخمين","قائمة شطب أو سلم تقدير واستبانة قصيرة للطلبة","سؤال طالب واحد فقط","لا حاجة لأداة"],1,"الأدوات المنظمة تعطي معلومات موثوقة."]
+   ]},
+  b:{scenario:"وُصفت بيئة صفية: 38 طالبًا، إضاءة ضعيفة، مقاعد ثابتة في صفوف، ومعلم ينوّع الأنشطة لكن الطلبة يتحدثون بحرية دون ضوابط.",
+   qs:[
+    ["أي مما يلي من نقاط الضعف في هذه البيئة؟",["تنويع الأنشطة","الازدحام والإضاءة الضعيفة وثبات المقاعد وغياب ضوابط التفاعل","حرية التعبير","وجود معلم"],1,"هذه العناصر وردت في الوصف وتعيق جودة التعلم."],
+    ["ما مدى ملاءمة هذه البيئة للتعلم التعاوني؟",["ملائمة تمامًا","ملائمة لأن الحديث حر","غير مهمة","محدودة لأن ثبات المقاعد والازدحام يعيقان تشكيل المجموعات"],3,"التعاون يحتاج مرونة في الترتيب وضوابط للتفاعل."],
+    ["أي ترتيب للتحسينات أنسب؟",["وضع قواعد للتفاعل ثم تحسين الإضاءة وتنظيم الحركة ثم ترتيب المقاعد قدر الإمكان","شراء أثاث جديد فقط","زيادة عدد الطلبة","إلغاء الأنشطة"],0,"الأولوية للتحسينات منخفضة الكلفة وذات الأثر المباشر، ثم الأعلى كلفة."]
+   ]}
+ }}
+];
+/* ===== نهاية البيانات ===== */
+
+const LETTERS=["أ","ب","ج","د","هـ"];
+const LS="lenv-mcq-progress-v1";
+let state={level:"a",topic:0,idx:0,picked:null,results:[],open:false};
+let progress={};
+try{progress=JSON.parse(localStorage.getItem(LS)||"{}")}catch(e){progress={}}
+function save(){try{localStorage.setItem(LS,JSON.stringify(progress))}catch(e){}}
+
+const $=s=>document.querySelector(s);
+const levelsEl=$("#levels"), topicsEl=$("#topics"), stageEl=$("#stage");
+
+function resetTopic(){state.idx=0;state.picked=null;state.results=[]}
+
+function renderLevels(){
+  levelsEl.innerHTML="";
+  LEVELS.forEach(l=>{
+    const b=document.createElement("button");
+    b.className="chip";b.type="button";b.textContent=l.name;
+    b.setAttribute("aria-pressed",String(state.level===l.id));
+    b.onclick=()=>{state.level=l.id;resetTopic();renderAll()};
+    levelsEl.appendChild(b);
+  });
+}
+function renderTopics(){
+  topicsEl.innerHTML="";
+  TOPICS.forEach((t,i)=>{
+    const li=document.createElement("li");
+    const b=document.createElement("button");
+    b.className="topic";b.type="button";
+    if(state.open&&state.topic===i)b.setAttribute("aria-current","true");
+    const p=progress[state.level+"-"+i];
+    b.innerHTML='<span class="num">'+(i+1)+'</span><span class="t">'+t.title+'</span>'+(p?'<span class="done">'+p.score+'/'+p.total+'</span>':'');
+    b.onclick=()=>{state.topic=i;state.open=true;resetTopic();renderAll();stageEl.scrollIntoView({behavior:"smooth",block:"start"})};
+    li.appendChild(b);topicsEl.appendChild(li);
+  });
+}
+
+function renderStage(){
+  if(!state.open){stageEl.innerHTML='<div class="empty">اختر موضوعًا من القائمة للبدء.</div>';return}
+  const t=TOPICS[state.topic], item=t.items[state.level], n=item.qs.length;
+  let h='<div class="stage"><h2>'+t.title+'</h2>';
+
+  if(state.idx>=n){
+    const sc=state.results.filter(r=>r.ok).length;
+    h+='<div class="summary"><div class="score">'+sc+' / '+n+'</div><p>أنهيت هذا الموضوع.</p></div>';
+    const wrong=state.results.filter(r=>!r.ok);
+    if(wrong.length){
+      h+='<p><b>أسئلة تحتاج إلى مراجعة:</b></p><ul class="review">';
+      wrong.forEach(r=>{const q=item.qs[r.i];h+='<li>'+q[0]+'<small>الإجابة الصحيحة: '+LETTERS[q[2]]+') '+q[1][q[2]]+'</small></li>'});
+      h+='</ul>';
+    }
+    h+='<div style="text-align:center"><button class="btn ghost" id="again" type="button">أعد المحاولة</button> ';
+    if(state.topic<TOPICS.length-1)h+='<button class="btn" id="next" type="button">الموضوع التالي</button>';
+    h+='</div></div>';
+    stageEl.innerHTML=h;
+    $("#again").onclick=()=>{resetTopic();renderStage()};
+    const nx=$("#next"); if(nx)nx.onclick=()=>{state.topic++;resetTopic();renderAll();stageEl.scrollIntoView({behavior:"smooth",block:"start"})};
+    return;
+  }
+
+  const [q,opts,c,e]=item.qs[state.idx];
+  const answered=state.picked!==null;
+  h+='<div class="scenario">'+item.scenario+'</div>';
+  h+='<div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="'+n+'" aria-valuenow="'+state.idx+'"><i style="width:'+(state.idx/n*100)+'%"></i></div>';
+  h+='<div class="count">السؤال '+(state.idx+1)+' من '+n+'</div>';
+  h+='<p class="q">'+q+'</p><div class="opts" role="radiogroup" aria-label="البدائل">';
+  opts.forEach((o,i)=>{
+    let cls="opt";
+    if(answered){if(i===c)cls+=" correct";else if(i===state.picked)cls+=" wrong"}
+    h+='<button type="button" role="radio" aria-checked="'+(state.picked===i)+'" class="'+cls+'" data-i="'+i+'"'+(answered?' disabled':'')+'><span class="circle">'+LETTERS[i]+'</span><span class="txt">'+o+'</span></button>';
+  });
+  h+='</div>';
+  if(answered){
+    const ok=state.picked===c;
+    h+='<div class="fb '+(ok?'ok':'bad')+'"><b>'+(ok?'إجابة صحيحة':'إجابة غير صحيحة، الصحيحة: '+LETTERS[c])+'</b>'+e+'</div>';
+    h+='<button class="btn" id="go" type="button">'+(state.idx===n-1?'عرض النتيجة':'السؤال التالي')+'</button>';
+  }
+  h+='</div>';
+  stageEl.innerHTML=h;
+
+  stageEl.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
+    state.picked=+b.dataset.i;
+    state.results.push({i:state.idx,ok:state.picked===c});
+    renderStage();
+  });
+  const go=$("#go");
+  if(go)go.onclick=()=>{
+    state.idx++;state.picked=null;
+    if(state.idx>=n){
+      progress[state.level+"-"+state.topic]={score:state.results.filter(r=>r.ok).length,total:n};
+      save();renderTopics();
+    }
+    renderStage();
+  };
+}
+function renderAll(){renderLevels();renderTopics();renderStage()}
+renderAll();
+
+$("#themeBtn").onclick=()=>{
+  const r=document.documentElement;
+  const dark=r.getAttribute("data-theme")==="dark"||(!r.getAttribute("data-theme")&&matchMedia("(prefers-color-scheme: dark)").matches);
+  r.setAttribute("data-theme",dark?"light":"dark");
+};
+</script>
+</body>
+</html>
